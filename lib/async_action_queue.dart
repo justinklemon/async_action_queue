@@ -14,13 +14,13 @@ class AsyncActionQueue {
       }
     });
   }
-  Future<dynamic> addJobAsync(Future<dynamic> Function() job, {
+  Future<T> addJobAsync<T>(Future<T> Function() job, {
   String? label,
   String? description,
   int retryTime = 1,
 }) async {
-    final Completer<dynamic> completer = Completer<dynamic>();
-    _queue.addJob(() async {
+    final Completer<T> completer = Completer<T>();
+    _queue.addJob((_) async {
       try {
         final result = await job();
         completer.complete(result);
