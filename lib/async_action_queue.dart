@@ -5,12 +5,14 @@ import 'package:async_queue/async_queue.dart';
 class AsyncActionQueue {
   final _queue = AsyncQueue.autoStart();
   int _jobCount = 0;
-  Completer<void> _queueCompleter = Completer<void>();
+  Completer<void>? _queueCompleter = Completer<void>();
   AsyncActionQueue(){
     _queue.addQueueListener((QueueEvent event) {
       if (event.type == QueueEventType.queueEnd) {
-        _queueCompleter.complete();
-        _queueCompleter = Completer<void>();
+        _queueCompleter?.complete();
+        _queueCompleter = null;
+      } else {
+        _queueCompleter ??= Completer<void>();
       }
     });
   }
@@ -32,5 +34,5 @@ class AsyncActionQueue {
   }
 
   // Can be used by the KeepAliveLinkController to determine if the queue is done
-  Future<void> get queueDoneFuture => _queueCompleter.future;
+  Future<void> get queueDoneFuture => _queueCompleter?.future ?? Future.value();
 }
